@@ -36,9 +36,16 @@ async function loadMe() {
 }
 
 async function loadInvites() {
-  const { data, error } = await sb.from('invites')
-    .select('meeting_id, meetings(id,title,duration_min,started_at,profiles(username))')
-    .eq('user_id', me.id);
+  
+const { data, error } = await sb.from('invites')
+  .select(`
+    meeting_id,
+    meetings!invites_meeting_id_fkey(
+      id, title, duration_min, started_at,
+      profiles!meetings_host_id_fkey(username)
+    )
+  `)
+  .eq('user_id', me.id);
   if (error) return ($('invites').textContent = error.message);
   $('invites').innerHTML = data.length ? data.map((r) => `
     <div class="row card"><div><b>${esc(r.meetings.title)}</b><div class="mut">Host: ${esc(r.meetings.profiles.username)} · ${r.meetings.duration_min} min${r.meetings.started_at ? ' · LIVE' : ''}</div></div>
