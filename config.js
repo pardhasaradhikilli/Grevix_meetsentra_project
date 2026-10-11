@@ -1,2 +1,0 @@
-export const SUPABASE_URL = 'https://wnvhdmfbahkovrhefndg.supabase.co';
-export const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndudmhkbWZiYWhrb3ZyaGVmbmRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE2OTIxMDgsImV4cCI6MjEwNzI2ODEwOH0.GYtWvZPYs47PeI27DZB0doZ6oW-cFik5s5S5e7sUffo';
