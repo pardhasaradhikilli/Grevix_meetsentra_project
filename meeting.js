@@ -18,18 +18,50 @@ const note = (t) => { $('notice').textContent = t; };
 const nameOf = (uid) => members.get(uid)?.username || uid.slice(0, 6);
 
 // ---------- start ----------
+
 async function boot() {
-  const { data: { user } } = await sb.auth.getUser();
-  if (!user) { location.href = 'index.html'; return; }
-  const { data: prof } = await sb.from('profiles').select('id,username').eq('id', user.id).single();
-  me = prof;
-  const { data: m } = await sb.from('meetings').select('id,title,duration_min,room_code,started_at,host_id').eq('id', meetingId).maybeSingle();
-  if (!m) { $('denied').textContent = 'You are not invited to this meeting, or it does not exist.'; return; }
-  meeting = m; isHost = m.host_id === me.id;
-  $('title').textContent = m.title;
-  $('gate').hidden = false;
-  $('joinFocus').onclick = () => join(true);
-  $('joinPlain').onclick = () => join(false);
+  try {
+    const { data: { user }, error: authError } = await sb.auth.getUser();
+
+    if (authError) throw authError;
+    if (!user) {
+      location.href = 'index.html';
+      return;
+    }
+
+    const { data: prof, error: profileError } = await sb
+      .from('profiles')
+      .select('id, username')
+      .eq('id', user.id)
+      .single();
+
+    if (profileError) throw profileError;
+    if (!prof) throw new Error('Your profile was not found.');
+
+    me = prof;
+
+    if (!meetingId) throw new Error('Meeting ID is missing from the URL.');
+
+    const { data: m, error: meetingError } = await sb
+      .from('meetings')
+      .select('id,title,duration_min,room_code,started_at,host_id')
+      .eq('id', meetingId)
+      .maybeSingle();
+
+    if (meetingError) throw meetingError;
+    if (!m) throw new Error('Meeting not found or access denied.');
+
+    meeting = m;
+    isHost = m.host_id === me.id;
+    $('title').textContent = m.title;
+    $('gate').hidden = false;
+
+    $('joinFocus').onclick = () => join(true);
+    $('joinPlain').onclick = () => join(false);
+  } catch (error) {
+    console.error('MeetSentra boot error:', error);
+    $('denied').textContent = 'Could not open meeting: ' + error.message;
+  }
 }
 
 async function join(withFocus) {
