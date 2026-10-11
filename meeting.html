@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MeetSentra meeting</title><link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+</head><body><main>
+<div class="row"><h2 id="title">Meeting</h2><a class="btn" href="index.html">Leave</a></div>
+
+<section id="gate" class="card" hidden>
+  <h3>Before you join</h3>
+  <p class="mut">MeetSentra can estimate engagement <b>on your own device</b>. Your camera preview is analysed locally.
+  No video is stored or uploaded for this, and your screen is never captured. Only a short status
+  (like "engaged") is shared with the host. It is an estimate, not a judgement. You can decline.</p>
+  <button id="joinFocus">Join with focus estimation</button>
+  <button id="joinPlain" class="ghost">Join without it</button>
+</section>
+<p id="denied" class="err"></p>
+
+<section id="room" hidden>
+  <div id="notice" class="mut"></div>
+  <div id="hostAlert" class="card warn" hidden></div>
+  <div id="prompt" class="card okc" hidden>Still with us? <button id="here">I'm here</button></div>
+  <div id="videos" class="grid"></div>
+  <div>
+    <button id="mic" class="ghost">Mic</button><button id="cam" class="ghost">Camera</button>
+    <button id="brb" class="ghost" hidden>Be right back</button>
+  </div>
+  <div class="card"><b>Tell the host (anonymous)</b><br>
+    <button class="ghost pulse" data-type="Lost me">Lost me</button>
+    <button class="ghost pulse" data-type="Too fast">Too fast</button>
+    <button class="ghost pulse" data-type="Need a break">Need a break</button></div>
+
+  <section id="hostPanel" class="card" hidden>
+    <h3>Host panel</h3>
+    <label class="chk"><input type="checkbox" id="demo"> Demo mode (short timers, for showing the speed)</label>
+    <div id="summary" class="mut"></div><div id="people"></div>
+  </section>
+
+  <div class="card"><h3>Chat</h3><div id="log"></div>
+    <input id="msg" placeholder="Type a message" maxlength="500"><button id="send">Send</button></div>
+</section>
+</main><script type="module" src="meeting.js"></script></body></html>
