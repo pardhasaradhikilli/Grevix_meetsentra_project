@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MeetSentra</title><link rel="stylesheet" href="style.css">
+</head><body><main>
+<h1>MeetSentra</h1><p class="tag">Smarter Meetings. Safer Connections.</p>
+
+<section id="auth" class="card">
+  <input id="u" placeholder="username (a-z, 0-9, _)" autocapitalize="none" autocomplete="username">
+  <input id="p" type="password" placeholder="password (min 6)" autocomplete="current-password">
+  <button id="login">Log in</button><button id="signup" class="ghost">Sign up</button>
+  <p id="authErr" class="err"></p>
+</section>
+
+<section id="app" hidden>
+  <div class="row"><b>Hi, <span id="me"></span></b><button id="logout" class="ghost">Log out</button></div>
+
+  <div class="card"><h3>Invitations</h3><div id="invites" class="mut">None yet</div></div>
+
+  <div class="card"><h3>Create a meeting</h3>
+    <input id="title" placeholder="Meeting title">
+    <input id="dur" type="number" min="5" max="480" value="60" placeholder="Length in minutes">
+    <textarea id="who" rows="3" placeholder="Invite usernames: paste a list (commas, spaces or new lines) or load a file"></textarea>
+    <label class="mut">Or load a .txt / .csv file of usernames: <input id="whoFile" type="file" accept=".txt,.csv,text/plain,text/csv"></label>
+    <button id="create">Create and invite</button><button id="retryBtn" class="ghost" hidden>Retry failed invites</button><p id="createMsg" class="mut"></p>
+  </div>
+
+  <div class="card"><h3>My meetings (I host)</h3><div id="mine" class="mut">None yet</div></div>
+</section>
+<div id="toast"></div>
+</main><script type="module" src="app.js"></script></body></html>

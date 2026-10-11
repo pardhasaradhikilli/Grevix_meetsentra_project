@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>MeetSentra</title><link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+</head><body class="meet">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-mic" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></symbol>
+  <symbol id="i-mic-off" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="2" y1="2" x2="22" y2="22"/></symbol>
+  <symbol id="i-cam" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></symbol>
+  <symbol id="i-cam-off" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/><line x1="2" y1="2" x2="22" y2="22"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></symbol>
+  <symbol id="i-leave" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
+</svg>
+
+<video id="analysis" class="ghostvid" autoplay playsinline muted></video>
+<div id="status" class="status">Loading meeting...</div>
+
+<section id="lobby" class="lobby" hidden>
+  <div class="lobby-card">
+    <h2 id="lobbyTitle">Ready to join?</h2><div class="mut" id="lobbyHost"></div>
+    <div class="preview"><video id="preview" autoplay playsinline muted></video>
+      <div class="pbar">
+        <button id="pMic" class="rb" title="Microphone"><svg class="ic"><use href="#i-mic"/></svg></button>
+        <button id="pCam" class="rb" title="Camera"><svg class="ic"><use href="#i-cam"/></svg></button>
+      </div></div>
+    <div class="meter"><div id="meter"></div></div>
+    <div class="mut" style="font-size:13px">Tap the screen, then speak to test your microphone.</div>
+    <div id="lobbyNote" class="err"></div>
+    <label class="chk"><input type="checkbox" id="focusOpt" checked>
+      <span>Estimate engagement on my device (optional)
+      <small>Your camera is analysed only on this device. If you turn your camera off, your video is not shared with others, but this check can keep running privately and an indicator stays visible. No video is stored or uploaded, your screen is never captured, and only a short status reaches the host. Untick this box to turn the analysis off completely.</small></span></label>
+    <button id="joinBtn" class="primary">Join now</button>
+    <a class="link" href="index.html">Back to dashboard</a>
+  </div>
+</section>
+
+<div id="room" hidden>
+  <div class="topbar"><div><b id="roomTitle"></b><span class="mut" id="clock"></span></div><div class="row" style="gap:6px"><span class="pill" id="privacy" hidden></span><span class="pill" id="count"></span></div></div>
+  <button id="audioBanner" class="banner" hidden>Tap to turn on sound</button>
+  <div id="alertbar" hidden></div>
+  <div id="prompt" hidden><span>Still with us?</span><button id="here">I'm here</button></div>
+  <section id="videos" class="grid" data-n="1"></section>
+
+  <div class="controls">
+    <button id="mic" class="rb" title="Microphone"><svg class="ic"><use href="#i-mic"/></svg></button>
+    <button id="cam" class="rb" title="Camera"><svg class="ic"><use href="#i-cam"/></svg></button>
+    <button id="brb" class="rb" title="Be right back" hidden><svg class="ic"><use href="#i-clock"/></svg></button>
+    <button id="reactBtn" class="rb" title="Tell the host"><svg class="ic"><use href="#i-smile"/></svg></button>
+    <button id="chatBtn" class="rb" title="Chat"><svg class="ic"><use href="#i-chat"/></svg><span id="chatBadge" class="badge" hidden>0</span></button>
+    <button id="alertsBtn" class="rb" title="Alerts" hidden><svg class="ic"><use href="#i-bell"/></svg><span id="alertBadge" class="badge" hidden>0</span></button>
+    <button id="seesBtn" class="rb" title="What MeetSentra sees"><svg class="ic"><use href="#i-eye"/></svg></button>
+    <button id="hostBtn" class="rb" title="Host panel" hidden><svg class="ic"><use href="#i-users"/></svg></button>
+    <button id="leave" class="rb leave" title="Leave"><svg class="ic"><use href="#i-leave"/></svg></button>
+  </div>
+
+  <div id="reactPanel" class="pop" hidden>
+    <button class="ghost pulse" data-type="Lost me">Lost me</button>
+    <button class="ghost pulse" data-type="Too fast">Too fast</button>
+    <button class="ghost pulse" data-type="Need a break">Need a break</button>
+    <div style="width:100%;height:0"></div>
+    <button class="ghost" data-emoji="hand">✋ Raise hand</button>
+    <button class="ghost" data-emoji="👍">👍</button><button class="ghost" data-emoji="👏">👏</button>
+    <button class="ghost" data-emoji="❤️">❤️</button><button class="ghost" data-emoji="😂">😂</button><button class="ghost" data-emoji="🎉">🎉</button>
+  </div>
+
+  <aside id="chatPanel" class="panel" hidden>
+    <header><b>Chat</b><button class="ghost" data-close="chatPanel">Close</button></header>
+    <div id="log"></div>
+    <div class="sendrow"><input id="msg" placeholder="Send a message" maxlength="500"><button id="send">Send</button></div>
+  </aside>
+
+  <aside id="hostPanel" class="panel" hidden>
+    <header><b>Host panel</b><button class="ghost" data-close="hostPanel">Close</button></header>
+    <div class="pbody">
+      <label class="chk"><input type="checkbox" id="demo"><span>Demo mode<small>Short timers so the 15-second detection can be shown live.</small></span></label>
+      <div id="summary" class="mut"></div>
+      <div id="people"></div>
+      <hr class="sep"><b>Quick poll</b>
+      <input id="pollQ" placeholder="Question, e.g. Which option is correct?">
+      <input id="pollOpts" placeholder="Options, comma separated (A, B, C)">
+      <button id="pollSend">Send poll</button><button id="pollQuick" class="ghost">Understanding check</button><button id="pollEnd" class="ghost" hidden>End poll</button>
+      <div id="pollHost" class="mut"></div>
+      <hr class="sep"><b>Blocked words for this class</b>
+      <input id="wordsIn" placeholder="Add words, comma separated (any language)">
+      <button id="wordsSend" class="ghost">Add to filter</button>
+      <hr class="sep"><button id="reportBtn">Attendance report</button>
+    </div>
+  </aside>
+  <aside id="alertsPanel" class="panel" hidden><header><b>Alerts</b><button class="ghost" data-close="alertsPanel">Close</button></header>
+    <div class="pbody"><div id="alertsList"></div>
+      <div style="margin:10px 0"><button id="alertsClear" class="ghost">Clear all</button><button id="alertsSound" class="ghost">Sound: on</button><button id="alertsCsv" class="ghost">Download log</button></div>
+      <b>Earlier</b><div id="alertsHistory"></div></div></aside>
+  <aside id="seesPanel" class="panel" hidden><header><b>What MeetSentra sees about you</b><button class="ghost" data-close="seesPanel">Close</button></header><div id="seesBody" class="pbody"></div></aside>
+  <aside id="reportPanel" class="panel" hidden><header><b>Attendance report</b><button class="ghost" data-close="reportPanel">Close</button></header><div id="reportBody" class="pbody"></div></aside>
+  <div id="pollCard" class="pollcard" hidden></div>
+  <div id="floaters"></div>
+  <div id="mtoast"></div>
+</div>
+
+<script>
+(async () => {
+  const status = document.getElementById('status');
+  const fail = (m) => { status.hidden = false; status.textContent = m; status.classList.add('err'); };
+  window.addEventListener('error', (e) => fail('Error: ' + (e.message || 'a script failed to load')));
+  window.addEventListener('unhandledrejection', (e) => fail('Error: ' + ((e.reason && e.reason.message) || e.reason)));
+  if (typeof Peer === 'undefined') return fail('The video library (PeerJS) could not load. Check your internet connection and reload.');
+  const bad = [];
+  for (const f of ['config.js', 'moderation.js', 'meeting.js', 'features.js', 'featuresCore.js', 'alertsCore.js', 'capacity.js', 'flags.js']) {
+    try { const r = await fetch(f, { cache: 'no-store' }); if (!r.ok || !/javascript/.test(r.headers.get('content-type') || '')) bad.push(f); }
+    catch { bad.push(f); }
+  }
+  if (bad.length) return fail('These files are missing on the website: ' + bad.join(', ') + '. Upload them next to meeting.html and redeploy.');
+  try { await import('./meeting.js?v=4'); } catch (e) { fail('meeting.js could not start: ' + e.message); }
+})();
+</script>
+</body></html>
